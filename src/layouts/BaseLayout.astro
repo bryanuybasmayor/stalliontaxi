@@ -1,0 +1,105 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jost';
+import '../styles/global.css';
+
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import MobileCallBar from '../components/MobileCallBar.astro';
+import { business, services, serviceArea } from '../data/business';
+
+type Props = {
+  title: string;
+  description: string;
+};
+
+const { title, description } = Astro.props;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': ['TaxiService', 'LocalBusiness'],
+  name: business.name,
+  description,
+  slogan: business.tagline,
+  telephone: '+1-306-920-9896',
+  email: business.email,
+  url: business.facebook,
+  sameAs: [business.facebook],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: business.city,
+    addressRegion: business.provinceShort,
+    postalCode: business.postalCode,
+    addressCountry: 'CA',
+  },
+  // Only confirmed towns are listed. Naicam stays out until the owner confirms it.
+  areaServed: [
+    ...serviceArea.local,
+    ...serviceArea.medical,
+    ...serviceArea.nearby,
+  ].map((name) => ({ '@type': 'City', name })),
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: business.hours.schema.dayOfWeek.split(' '),
+      opens: business.hours.schema.opens,
+      closes: business.hours.schema.closes,
+    },
+  ],
+  makesOffer: services.map((service) => ({
+    '@type': 'Offer',
+    itemOffered: { '@type': 'Service', name: service.title, description: service.description },
+  })),
+};
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/icon-64.png" sizes="64x64" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="en_CA" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <!-- TODO: add og:image and og:url with the absolute domain once the owner confirms it. -->
+
+    <meta name="geo.region" content="CA-SK" />
+    <meta name="geo.placename" content="Melfort, Saskatchewan" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body class="flex min-h-dvh flex-col pb-[76px] md:pb-0">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-[2px] focus:bg-gold focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink"
+    >
+      Skip to content
+    </a>
+
+    <SiteHeader />
+
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <MobileCallBar />
+
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>

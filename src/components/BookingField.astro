@@ -1,0 +1,72 @@
+---
+type Props = {
+  id: string;
+  name: string;
+  label: string;
+  error: string;
+  type?: 'text' | 'tel' | 'date' | 'time' | 'select' | 'textarea';
+  placeholder?: string;
+  autocomplete?: string;
+  required?: boolean;
+  options?: string[];
+  class?: string;
+};
+
+const {
+  id,
+  name,
+  label,
+  error,
+  type = 'text',
+  placeholder,
+  autocomplete,
+  required = false,
+  options = [],
+  class: className = '',
+} = Astro.props;
+
+const describedBy = `${id}-error`;
+const controlClass = 'field-control';
+---
+
+<div class={className}>
+  <label class="field-label" for={id}>
+    {label}
+    {!required && <span class="ml-1 font-normal tracking-normal normal-case text-mute">(optional)</span>}
+  </label>
+
+  {
+    type === 'select' ? (
+      <select class={controlClass} id={id} name={name} required={required} aria-describedby={describedBy}>
+        {options.map((option) => (
+          <option value={option}>{option}</option>
+        ))}
+      </select>
+    ) : type === 'textarea' ? (
+      <textarea
+        class={controlClass}
+        id={id}
+        name={name}
+        rows="3"
+        placeholder={placeholder}
+        autocomplete={autocomplete}
+        required={required}
+        aria-describedby={describedBy}
+      ></textarea>
+    ) : (
+      <input
+        class={controlClass}
+        id={id}
+        name={name}
+        type={type}
+        inputmode={type === 'tel' ? 'tel' : undefined}
+        placeholder={placeholder}
+        autocomplete={autocomplete}
+        required={required}
+        aria-describedby={describedBy}
+      />
+    )
+  }
+
+  <p class="field-error" id={describedBy} data-visible="false">{error}</p>
+</div>

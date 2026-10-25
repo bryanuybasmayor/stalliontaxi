@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+# Written by scripts/export-demo.mjs, which publishes ./index.html for GitHub Pages.
+.demo-manifest.json
+.DS_Store
+*.log
+.env
+.env.*

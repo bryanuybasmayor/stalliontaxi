@@ -1,0 +1,183 @@
+@import 'tailwindcss';
+
+/*
+  Palette sampled from the supplied logo artwork (img/stalliontaxi.png):
+  the mark and wordmark are gold only, on transparent — no black is in the
+  file, so the page ground is the deep black the logo is meant to sit on.
+  Gold values below are the sampled mid tone, highlight and shadow.
+*/
+@theme {
+  --color-ink: #0a0a0a;
+  --color-void: #030303;
+  --color-coal: #101010;
+  --color-charcoal: #171614;
+  --color-line: #2a2721;
+  --color-mute: #a29c92;
+  --color-bone: #f5f1e8;
+  --color-gold: #d8b850;
+  --color-gold-light: #f0df8a;
+  --color-gold-deep: #8a6f2c;
+  --color-warn: #e6a17b;
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Jost Variable', 'Futura', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  input,
+  select,
+  textarea {
+    /* iOS otherwise zooms the page when a 15px field is focused */
+    font-size: 16px;
+  }
+
+  /* Date/time pickers ship with a dark-native icon on some browsers. */
+  input[type='date'],
+  input[type='time'] {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .field-label {
+    @apply mb-2 block text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-mute;
+  }
+
+  .field-control {
+    @apply block h-12 w-full rounded-[2px] border border-line bg-ink/60 px-3.5 text-base text-bone
+      placeholder:text-mute/60 transition-colors outline-none
+      hover:border-line focus:border-gold focus:ring-1 focus:ring-gold;
+  }
+
+  textarea.field-control {
+    @apply h-auto min-h-28 py-3;
+  }
+
+  .btn-primary {
+    @apply inline-flex h-12 items-center justify-center gap-2 rounded-[2px] bg-gold px-6 text-sm
+      font-semibold tracking-[0.01em] whitespace-nowrap text-ink transition-colors
+      hover:bg-gold-light;
+  }
+
+  .btn-outline {
+    @apply inline-flex h-12 items-center justify-center gap-2 rounded-[2px] border border-line px-6
+      text-sm font-semibold tracking-[0.01em] whitespace-nowrap text-bone transition-colors
+      hover:border-gold hover:text-gold;
+  }
+
+  .eyebrow {
+    @apply font-display text-[0.6875rem] font-medium uppercase tracking-[0.24em] text-gold;
+  }
+
+  .section-rule {
+    @apply flex items-baseline justify-between gap-4 border-t border-line pt-4;
+  }
+
+  /* Form group label: eyebrow text on a full-width hairline. */
+  .form-legend {
+    @apply mb-4 flex w-full items-center gap-4 p-0;
+  }
+
+  .form-legend::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background-color: var(--color-line);
+  }
+
+  .display {
+    @apply font-display font-normal tracking-[-0.025em];
+  }
+
+  .field-error {
+    @apply mt-2 hidden text-sm text-warn;
+  }
+
+  .field-error[data-visible='true'] {
+    @apply block;
+  }
+
+  .nav-link {
+    @apply relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0.6rem;
+    left: 0;
+    height: 1px;
+    background-color: var(--color-gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+
+  .field-control[aria-invalid='true'] {
+    @apply border-warn;
+  }
+}
+
+@utility shell {
+  @apply mx-auto w-full max-w-[76rem] px-5 sm:px-8;
+}
+
+/* Motion: JS adds .reveal-ready, so content is never hidden without JS. */
+@media (prefers-reduced-motion: no-preference) {
+  html.reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html.reveal-ready [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-parallax] {
+  transform: scale(1.25);
+  will-change: transform;
+}
+
+header[data-stuck] {
+  border-bottom-color: var(--color-line);
+  box-shadow: 0 18px 40px -30px rgb(0 0 0 / 0.9);
+}
